@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      STORAGE_DIR: /app/storage
+      SITE_URL: ${SITE_URL:-https://thaigame.org}
+      SESSION_SECRET: ${SESSION_SECRET:?Set_a_long_random_session_secret}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@thaigame.org}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set_a_strong_admin_password}
+      ADMIN_NAME: ${ADMIN_NAME:-à¸œà¸¹à¹‰à¸”à¸¹à¹à¸¥ ThaiGame.org}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
+    expose:
+      - "3000"
+    volumes:
+      - thaigame_data:/app/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD","node","-e","fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+volumes:
+  thaigame_data:
