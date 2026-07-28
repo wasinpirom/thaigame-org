@@ -8,10 +8,10 @@ services:
       PORT: 3000
       STORAGE_DIR: /app/storage
       SITE_URL: ${SITE_URL:-https://thaigame.org}
-      SESSION_SECRET: ${SESSION_SECRET:?Set_a_long_random_session_secret}
+      SESSION_SECRET: ${SESSION_SECRET:-}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@thaigame.org}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set_a_strong_admin_password}
-      ADMIN_NAME: ${ADMIN_NAME:-ผู้ดูแล ThaiGame.org}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ADMIN_NAME: ${ADMIN_NAME:-ThaiGame.org Admin}
       MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
       SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
     expose:
@@ -27,3 +27,4 @@ services:
       start_period: 15s
 volumes:
   thaigame_data:
+
