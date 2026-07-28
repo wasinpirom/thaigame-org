@@ -1,0 +1,4 @@
+const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs"),os=require("node:os"),path=require("node:path");
+process.env.NODE_ENV="test";process.env.SESSION_SECRET="test-secret-that-is-safely-long-enough";process.env.SEED_DEMO_DATA="false";
+const{createApp}=require("../src/app");
+test("health and homepage render",async t=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),"thaigame-test-")),app=createApp({storageDir:dir}),server=app.listen(0,"127.0.0.1");await new Promise(r=>server.once("listening",r));t.after(()=>{server.close();app.locals.db.close();fs.rmSync(dir,{recursive:true,force:true})});const base=`http://127.0.0.1:${server.address().port}`,h=await fetch(base+"/health");assert.equal(h.status,200);assert.deepEqual(await h.json(),{status:"ok"});const r=await fetch(base),html=await r.text();assert.equal(r.status,200);assert.match(html,/พื้นที่ของเกมไทย/);assert.match(html,/ไม่รับฝากไฟล์เกม/)});

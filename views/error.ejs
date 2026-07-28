@@ -1,0 +1,1 @@
+<%- include("partials/head",{metaTitle,noindex:true}) %><main id="main" class="error-page"><div><span><%= statusCode||500 %></span><h1><%= metaTitle %></h1><p><%= message %></p><a class="btn btn--primary" href="/">กลับหน้าแรก</a> <button class="btn btn--outline" type="button" data-back>ย้อนกลับ</button></div></main><%- include("partials/footer") %>
