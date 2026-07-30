@@ -21,7 +21,7 @@ function createApp(options={}) {
   app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],imgSrc:["'self'","data:"],styleSrc:["'self'"],scriptSrc:["'self'"],frameSrc:["https://www.youtube-nocookie.com"],objectSrc:["'none'"],baseUri:["'self'"],formAction:["'self'"]}},crossOriginResourcePolicy:{policy:"same-origin"}}));
   app.use(compression()); app.use(express.static(path.join(root,"public"),{maxAge:"7d"})); app.use("/uploads",express.static(uploads,{maxAge:"30d",immutable:true}));
   app.use(express.urlencoded({extended:true,limit:"1mb"}));
-  app.use(session({name:"thaigame.sid",secret,store:new Store(db),resave:false,saveUninitialized:false,rolling:true,cookie:{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV==="production",maxAge:1209600000}}));
+  app.use(session({name:"thaigame.sid",secret,store:new Store(db),resave:false,saveUninitialized:false,rolling:true,cookie:{httpOnly:true,sameSite:"lax",secure:siteUrl.startsWith("https://"),maxAge:1209600000}}));
   app.use((req,res,next)=>{
     if(!req.session.csrf)req.session.csrf=H.token();
     req.user=req.session.uid?db.prepare("SELECT * FROM users WHERE id=? AND status='active'").get(req.session.uid):null;
