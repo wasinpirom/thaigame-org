@@ -9,7 +9,7 @@ services:
       STORAGE_DIR: /app/storage
       SITE_URL: ${SITE_URL:-https://thaigame.org}
       SESSION_SECRET: ${SESSION_SECRET:-}
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@thaigame.org}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-wasin@pirom.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       ADMIN_NAME: ${ADMIN_NAME:-ThaiGame.org Admin}
       MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
