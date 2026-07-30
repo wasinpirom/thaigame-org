@@ -16,6 +16,7 @@ function createApp(options={}) {
   const storage=options.storageDir||process.env.STORAGE_DIR||path.join(root,"storage"), uploads=path.join(storage,"uploads");
   fs.mkdirSync(uploads,{recursive:true}); const db=options.db||init(storage);
   const siteUrl=String(process.env.SITE_URL||"https://thaigame.org").replace(/\/+$/,"");
+  const assetVersion=process.env.ASSET_VERSION||String(Date.now());
   const secret=process.env.SESSION_SECRET||(process.env.NODE_ENV==="production"?"":H.token(32)); if(!secret)throw new Error("SESSION_SECRET is required");
   app.set("trust proxy",1); app.set("view engine","ejs"); app.set("views",path.join(root,"views")); app.disable("x-powered-by");
   app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],imgSrc:["'self'","data:"],styleSrc:["'self'"],scriptSrc:["'self'"],frameSrc:["https://www.youtube-nocookie.com"],objectSrc:["'none'"],baseUri:["'self'"],formAction:["'self'"]}},crossOriginResourcePolicy:{policy:"same-origin"}}));
@@ -26,7 +27,7 @@ function createApp(options={}) {
     if(!req.session.csrf)req.session.csrf=H.token();
     req.user=req.session.uid?db.prepare("SELECT * FROM users WHERE id=? AND status='active'").get(req.session.uid):null;
     if(req.session.uid&&!req.user)delete req.session.uid;
-    Object.assign(res.locals,{siteName:"ThaiGame.org",siteUrl,currentUser:req.user,csrfToken:req.session.csrf,currentPath:req.path,categories:H.CATEGORIES,platformOptions:H.PLATFORMS,formatDate:H.date,excerpt:H.excerpt,jsonArray:H.jsonArray,maxUploadMb:MAX,flash:req.session.flash||null});
+    Object.assign(res.locals,{siteName:"ThaiGame.org",siteUrl,currentUser:req.user,csrfToken:req.session.csrf,currentPath:req.path,categories:H.CATEGORIES,platformOptions:H.PLATFORMS,formatDate:H.date,excerpt:H.excerpt,jsonArray:H.jsonArray,maxUploadMb:MAX,flash:req.session.flash||null,assetVersion});
     delete req.session.flash; next();
   });
   const limiter=rateLimit({windowMs:900000,limit:20,legacyHeaders:false,standardHeaders:"draft-8",message:"ลองเข้าสู่ระบบหลายครั้งเกินไป กรุณารอ 15 นาที"});
