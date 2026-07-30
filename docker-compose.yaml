@@ -16,6 +16,8 @@ services:
       SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
     expose:
       - "3000"
+    ports:
+      - "3000:3000"
     volumes:
       - thaigame_data:/app/storage
     restart: unless-stopped
