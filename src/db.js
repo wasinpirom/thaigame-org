@@ -23,18 +23,36 @@ function init(storageDir) {
   CREATE TABLE IF NOT EXISTS games (
     id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     slug TEXT NOT NULL UNIQUE, title_th TEXT NOT NULL, title_en TEXT NOT NULL DEFAULT '',
-    short_description TEXT NOT NULL, description TEXT NOT NULL, developer_name TEXT NOT NULL DEFAULT '',
+    short_description TEXT NOT NULL, short_description_en TEXT NOT NULL DEFAULT '',
+    description TEXT NOT NULL, description_en TEXT NOT NULL DEFAULT '', developer_name TEXT NOT NULL DEFAULT '',
     release_date TEXT NOT NULL DEFAULT '', platforms TEXT NOT NULL DEFAULT '[]', categories TEXT NOT NULL DEFAULT '[]',
+    ai_usage TEXT NOT NULL DEFAULT '',
     cover_path TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'published', admin_note TEXT NOT NULL DEFAULT '',
     featured INTEGER NOT NULL DEFAULT 0, views INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
   );
   CREATE TABLE IF NOT EXISTS screenshots (id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE, path TEXT NOT NULL, sort_order INTEGER NOT NULL DEFAULT 0);
   CREATE TABLE IF NOT EXISTS videos (id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE, youtube_id TEXT NOT NULL, sort_order INTEGER NOT NULL DEFAULT 0);
   CREATE TABLE IF NOT EXISTS game_links (id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE, label TEXT NOT NULL, url TEXT NOT NULL, sort_order INTEGER NOT NULL DEFAULT 0);
+  CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    slug TEXT NOT NULL UNIQUE, title TEXT NOT NULL, event_type TEXT NOT NULL DEFAULT '',
+    start_date TEXT NOT NULL, end_date TEXT NOT NULL DEFAULT '', location TEXT NOT NULL DEFAULT '',
+    description TEXT NOT NULL, registration_url TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'published',
+    created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS event_registrations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    attendee_name TEXT NOT NULL, attendee_email TEXT NOT NULL, created_at TEXT NOT NULL
+  );
   CREATE TABLE IF NOT EXISTS sessions (sid TEXT PRIMARY KEY, sess TEXT NOT NULL, expire INTEGER NOT NULL);
   CREATE INDEX IF NOT EXISTS idx_games_status ON games(status, updated_at DESC);
   CREATE INDEX IF NOT EXISTS idx_games_user ON games(user_id);
+  CREATE INDEX IF NOT EXISTS idx_events_status_date ON events(status, start_date);
   CREATE INDEX IF NOT EXISTS idx_sessions_expire ON sessions(expire);`);
+  const cols = db.prepare("PRAGMA table_info(games)").all().map(c => c.name);
+  if (!cols.includes("short_description_en")) db.prepare("ALTER TABLE games ADD COLUMN short_description_en TEXT NOT NULL DEFAULT ''").run();
+  if (!cols.includes("description_en")) db.prepare("ALTER TABLE games ADD COLUMN description_en TEXT NOT NULL DEFAULT ''").run();
+  if (!cols.includes("ai_usage")) db.prepare("ALTER TABLE games ADD COLUMN ai_usage TEXT NOT NULL DEFAULT ''").run();
   bootstrap(db); seed(db); return db;
 }
 function bootstrap(db) {
