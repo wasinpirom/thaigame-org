@@ -25,7 +25,6 @@
 | `ADMIN_EMAIL` | อีเมลแอดมิน | |
 | `ADMIN_PASSWORD` | รหัสผ่านแข็งแรง | ติ๊ก Secret |
 | `ADMIN_NAME` | `อาจารย์ ดร.วศิน ภิรมย์` | |
-| `SEED_DEMO_DATA` | `true` หรือ `false` | |
 | `LLM_BASE_URL` | ดูข้อ 4 | endpoint ของ Ollama แบบ OpenAI-compatible (ลงท้าย `/v1`) |
 | `LLM_MODEL` | `qwen2.5:7b` | ชื่อเดียวกับที่ใช้ใน pasatalk |
 | `AUTO_PUBLISH` | `false` | `false` = ทุกข่าวต้องให้แอดมินอนุมัติก่อน |

@@ -55,7 +55,7 @@ function init(storageDir) {
   if (!cols.includes("short_description_en")) db.prepare("ALTER TABLE games ADD COLUMN short_description_en TEXT NOT NULL DEFAULT ''").run();
   if (!cols.includes("description_en")) db.prepare("ALTER TABLE games ADD COLUMN description_en TEXT NOT NULL DEFAULT ''").run();
   if (!cols.includes("ai_usage")) db.prepare("ALTER TABLE games ADD COLUMN ai_usage TEXT NOT NULL DEFAULT ''").run();
-  initNews(db); initJams(db); bootstrap(db); seed(db); return db;
+  initNews(db); initJams(db); bootstrap(db); return db;
 }
 function bootstrap(db) {
   const mail = String(process.env.ADMIN_EMAIL || "admin@thaigame.org").trim().toLowerCase();
@@ -66,27 +66,6 @@ function bootstrap(db) {
   const t = now();
   db.prepare(`INSERT INTO users(email,password_hash,display_name,role,profile_public,bio,contact_email,accepted_terms_at,created_at,updated_at)
     VALUES(?,?,?,'admin',1,?,?,?, ?,?)`).run(mail, bcrypt.hashSync(pass, 12), process.env.ADMIN_NAME || "ผู้ดูแล ThaiGame.org", "ผู้ดูแลพื้นที่ประชาสัมพันธ์ผลงานเกมไทย", mail, t, t, t);
-}
-function seed(db) {
-  if (String(process.env.SEED_DEMO_DATA || "true").toLowerCase() === "false" || db.prepare("SELECT COUNT(*) n FROM games").get().n) return;
-  const t = now();
-  let demo = db.prepare("SELECT id FROM users WHERE email='demo@thaigame.org'").get();
-  if (!demo) {
-    const r = db.prepare(`INSERT INTO users(email,password_hash,display_name,profile_public,bio,website_url,accepted_terms_at,created_at,updated_at)
-      VALUES(?,?,?,1,?,?,?,?,?)`).run("demo@thaigame.org", bcrypt.hashSync(`disabled-${Math.random()}`, 12), "ThaiGame Studio (ข้อมูลตัวอย่าง)", "โปรไฟล์ตัวอย่าง แอดมินสามารถแก้ไขหรือลบได้", "https://thaigame.org", t, t, t);
-    demo = { id: Number(r.lastInsertRowid) };
-  }
-  const games = [
-    ["หมากขุม: ศึกเมล็ดพันธุ์","Mak Khum: Seeds of Strategy","เกมวางแผนจากการละเล่นพื้นบ้านไทย เรียนรู้ง่าย แต่ท้าทายทุกตาเดิน","ผลงานตัวอย่างที่นำหมากขุมมาถ่ายทอดในรูปแบบเกมดิจิทัลร่วมสมัย ใช้ทดลองแก้ไขข้อมูลและโครงสร้างหน้าแสดงผลงานได้","ThaiGame Studio",["Web","Android"],["thai_developer","thai_traditional","thai_art"],"/demo-covers/makkhum.png",1,"ทดลองเล่น","https://pirom.com/makkhumgame/"],
-    ["Mini City Sim: เมืองเล็กของเรา","Mini City Sim","เกมสร้างเมืองบรรยากาศอบอุ่น วางผัง ดูแลประชาชน และเติบโตในแบบของคุณ","ผลงานตัวอย่างของเกมจำลองการสร้างเมืองจากนักพัฒนาไทย แสดงการเชื่อมผู้ชมไปยังเว็บไซต์ภายนอกโดยไม่ฝากไฟล์เกมไว้บน ThaiGame.org","Wasin Pirom",["Web","Windows"],["thai_developer","thai_art"],"/demo-covers/minicity.png",1,"ดูผลงาน","https://wasinpirom.com/minisimdemo/"],
-    ["Word Galaxy","Word Galaxy","ออกสำรวจกาแล็กซีแห่งตัวอักษร ฝึกคำศัพท์ผ่านภารกิจที่เล่นได้ทุกวัย","ตัวอย่างเกมเพื่อการเรียนรู้ แสดงให้เห็นว่า ThaiGame.org รองรับเกมไทยได้ทุกแนว ตั้งแต่เกมวัฒนธรรมไปจนถึงเกมการศึกษา","Wasin Pirom",["Web"],["thai_developer"],"/demo-covers/wordgalaxy.png",0,"ทดลองเล่น","https://www.wasinpirom.com/wordgalaxy/"]
-  ];
-  const add = db.prepare(`INSERT INTO games(user_id,slug,title_th,title_en,short_description,description,developer_name,platforms,categories,cover_path,featured,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`);
-  const link = db.prepare("INSERT INTO game_links(game_id,label,url,sort_order) VALUES(?,?,?,0)");
-  db.transaction(() => games.forEach(g => {
-    const r=add.run(demo.id,slug(g[1]),g[0],g[1],g[2],g[3],g[4],JSON.stringify(g[5]),JSON.stringify(g[6]),g[7],g[8],t,t);
-    link.run(Number(r.lastInsertRowid),g[9],g[10]);
-  }))();
 }
 class Store extends session.Store {
   constructor(db) { super(); this.db=db; this.getS=db.prepare("SELECT sess,expire FROM sessions WHERE sid=?"); this.setS=db.prepare("INSERT INTO sessions(sid,sess,expire) VALUES(?,?,?) ON CONFLICT(sid) DO UPDATE SET sess=excluded.sess,expire=excluded.expire"); this.delS=db.prepare("DELETE FROM sessions WHERE sid=?"); }

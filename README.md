@@ -5,21 +5,11 @@
 > โอเพนซอร์สเพื่อการศึกษา (MIT License) — Node.js + Express + EJS + SQLite, ระบบดึง RSS, AI เขียนข่าวด้วย LLM แบบ self-hosted, ปฏิทิน Game Jam และ Deploy ด้วย Dockerfile บน Coolify
 > ติดต่อ / แจ้งปัญหา: LINE OA @wasin
 
+## แนวคิด
+
+เว็บข่าวเกมไทยแบบ **AI ล้วน** ไม่มีระบบสมาชิกหรือให้คนลงเกมเอง ผู้สร้างเกมแค่เผยแพร่ผลงานบน itch.io (แท็ก thailand) หรือ YouTube แล้ว AI จะตามเก็บมาเล่าเป็นข่าวภาษาไทย มีเพียงแอดมินที่ล็อกอินเพื่อตรวจและอนุมัติข่าว
+
 ## ความสามารถ
-
-- สมัครสมาชิก เข้าสู่ระบบ และเปลี่ยนรหัสผ่าน
-- โปรไฟล์เปิด/ปิดสาธารณะ พร้อมอีเมล LINE ID เบอร์โทร เว็บไซต์และ Social
-- เพิ่ม แก้ไข และลบเกม พร้อมหมวดและแพลตฟอร์ม
-- ภาพปก 1 ภาพ และ Screenshot รวมไม่เกิน 20 ภาพ ภาพละไม่เกิน 10 MB
-- ตรวจไฟล์และแปลงภาพ JPG/PNG/WebP เป็น WebP
-- Embed YouTube สูงสุด 3 วิดีโอ
-- ลิงก์ซื้อ ดาวน์โหลด หรือทดลองเล่นบนเว็บภายนอก
-- ค้นหาและกรองเกม
-- Admin แก้ไข ซ่อน เผยแพร่ ลบเกม และระงับสมาชิก
-- SQLite + Persistent Volume, CSRF, rate limit, security headers, sitemap และ health check
-- ข้อมูลตัวอย่าง 3 เกมที่ Admin แก้ไขหรือลบได้
-
-## ระบบข่าว AI (v2)
 
 - ดึงข้อมูลอัตโนมัติจาก RSS/Atom, itch.io ตามแท็ก, ช่อง/Playlist YouTube (ไม่ต้องใช้ key) และค้นหา YouTube ด้วยคำ (ต้องมี `YOUTUBE_API_KEY`)
 - กรองด้วยคำสำคัญรายแหล่ง และกันข่าวซ้ำด้วย URL
@@ -49,8 +39,8 @@ openssl rand -hex 32
 
 Volume `thaigame_data` ถูก Mount ที่ `/app/storage`
 
-- `/app/storage/thaigame.sqlite` ฐานข้อมูลสมาชิก เกม และ Session
-- `/app/storage/uploads` รูปที่สมาชิกอัปโหลด
+- `/app/storage/thaigame.sqlite` ฐานข้อมูลข่าว แหล่งข่าว Game Jam และ Session แอดมิน
+- `/app/storage/uploads` รูปข่าวที่ระบบดาวน์โหลดมาเก็บ
 
 SQLite เหมาะกับแอป 1 Instance ห้ามเปิดหลาย Replica หากโตมากค่อยย้ายไป PostgreSQL และ S3-compatible storage
 
@@ -76,7 +66,6 @@ docker compose up -d --build
 - แก้หน้าเงื่อนไขให้มีผู้ให้บริการ อีเมลรับแจ้งละเมิด และนโยบาย PDPA จริง
 - ตั้ง Backup ของ Volume และทดลอง Restore
 - ใช้รหัสผ่าน Admin ที่แข็งแรงและเก็บ `SESSION_SECRET` เป็น Secret ใน Coolify
-- หากเปิดรับคนทั่วไปจำนวนมาก ควรเพิ่ม Email verification, CAPTCHA และระบบลืมรหัสผ่านผ่าน SMTP
 
 
 ## License

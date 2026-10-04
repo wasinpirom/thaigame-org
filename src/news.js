@@ -49,7 +49,6 @@ function registerNews(app, { db, uploads, admin, csrf, flash, worker, siteUrl })
     res.render("news/learn", { metaTitle: "คอร์สและแหล่งเรียนรู้สร้างเกม", metaDescription: "รวมคอร์สสร้างเกม เครื่องมือ และ resource ที่น่าสนใจสำหรับนักพัฒนาไทย", articles: published("kind='course'", [], PER_PAGE, (p - 1) * PER_PAGE), page: p, pages: Math.max(1, Math.ceil(total / PER_PAGE)) });
   });
   app.get("/contact", (_q, r) => r.render("contact", { metaTitle: "ติดต่อ ลงโฆษณา และแจ้งปัญหา", metaDescription: "ติดต่อ ดร.วศิน ภิรมย์ ผ่าน LINE OA @wasin" }));
-  app.get("/en/contact", (_q, r) => r.render("en/contact", { metaTitle: "Contact and advertising", metaDescription: "Contact Dr. Wasin Pirom via LINE OA @wasin" }));
 
   // ---------- admin: articles ----------
   const adminNav = (res, extra = {}) => Object.assign(res.locals, { pendingCount: pendingCount(), queueCount: db.prepare("SELECT COUNT(*) n FROM feed_items WHERE status IN ('queued','processing')").get().n, ...extra });
