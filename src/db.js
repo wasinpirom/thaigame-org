@@ -4,6 +4,8 @@ const session = require("express-session");
 const Database = require("better-sqlite3");
 const bcrypt = require("bcryptjs");
 const { slug } = require("./helpers");
+const { initNews } = require("./newsdb");
+const { initJams } = require("./jams");
 const now = () => new Date().toISOString();
 
 function init(storageDir) {
@@ -53,7 +55,7 @@ function init(storageDir) {
   if (!cols.includes("short_description_en")) db.prepare("ALTER TABLE games ADD COLUMN short_description_en TEXT NOT NULL DEFAULT ''").run();
   if (!cols.includes("description_en")) db.prepare("ALTER TABLE games ADD COLUMN description_en TEXT NOT NULL DEFAULT ''").run();
   if (!cols.includes("ai_usage")) db.prepare("ALTER TABLE games ADD COLUMN ai_usage TEXT NOT NULL DEFAULT ''").run();
-  bootstrap(db); seed(db); return db;
+  initNews(db); initJams(db); bootstrap(db); seed(db); return db;
 }
 function bootstrap(db) {
   const mail = String(process.env.ADMIN_EMAIL || "admin@thaigame.org").trim().toLowerCase();

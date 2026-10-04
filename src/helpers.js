@@ -36,4 +36,16 @@ const token = (n = 24) => crypto.randomBytes(n).toString("hex");
 function sameToken(a, b) { if (!a || !b) return false; const x = Buffer.from(String(a)); const y = Buffer.from(String(b)); return x.length === y.length && crypto.timingSafeEqual(x, y); }
 function date(v) { if (!v) return ""; const d = new Date(v); return Number.isNaN(d.getTime()) ? "" : new Intl.DateTimeFormat("th-TH", { dateStyle: "medium", timeZone: "Asia/Bangkok" }).format(d); }
 const excerpt = (v, n = 150) => { const s = text(v, 10000); return s.length > n ? `${s.slice(0, n).trim()}…` : s; };
-module.exports = { CATEGORIES, CATEGORIES_EN, PLATFORMS, array, date, email, excerpt, externalUrl, jsonArray, sameToken, selected, slug, text, token, validEmail, youtubeId };
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// Minimal safe renderer for AI/admin article bodies: paragraphs, "## " headings, "- " lists, **bold**. Everything is escaped first.
+function renderBody(v) {
+  const inline = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  return String(v || "").replace(/\r/g, "").split(/\n\s*\n/).map(block => {
+    const lines = block.split("\n").map(l => l.trim()).filter(Boolean); if (!lines.length) return "";
+    if (lines.every(l => /^[-*•]\s+/.test(l))) return `<ul>${lines.map(l => `<li>${inline(l.replace(/^[-*•]\s+/, ""))}</li>`).join("")}</ul>`;
+    if (/^#{2,3}\s+/.test(lines[0])) { const h = `<h2>${inline(lines[0].replace(/^#+\s+/, ""))}</h2>`; const rest = lines.slice(1); return h + (rest.length ? renderBody(rest.join("\n")) : ""); }
+    return `<p>${lines.map(inline).join("<br>")}</p>`;
+  }).join("");
+}
+const ago = (v) => { const d = new Date(v); if (Number.isNaN(d.getTime())) return ""; const m = Math.round((Date.now() - d.getTime()) / 60000); if (m < 60) return `${Math.max(m, 1)} นาทีที่แล้ว`; if (m < 1440) return `${Math.round(m / 60)} ชั่วโมงที่แล้ว`; if (m < 10080) return `${Math.round(m / 1440)} วันที่แล้ว`; return date(v); };
+module.exports = { CATEGORIES, CATEGORIES_EN, PLATFORMS, array, date, email, excerpt, externalUrl, jsonArray, sameToken, selected, slug, text, token, validEmail, youtubeId, esc, renderBody, ago };

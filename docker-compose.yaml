@@ -14,10 +14,26 @@ services:
       ADMIN_NAME: ${ADMIN_NAME:-ThaiGame.org Admin}
       MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
       SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
+      # ---- AI writer (Qwen2.5 7B ตัวเดียวกับ pasatalk ผ่าน Ollama / OpenAI-compatible API) ----
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
+      LLM_MODEL: ${LLM_MODEL:-qwen2.5:7b}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-900000}
+      AI_ENABLED: ${AI_ENABLED:-true}
+      AI_DAILY_LIMIT: ${AI_DAILY_LIMIT:-40}
+      AUTO_PUBLISH: ${AUTO_PUBLISH:-false}
+      FIRST_FETCH_QUEUE: ${FIRST_FETCH_QUEUE:-3}
+      NEWS_SCHEDULER: ${NEWS_SCHEDULER:-true}
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
+      JAMS_ENABLED: ${JAMS_ENABLED:-true}
+      JAMS_INTERVAL_HOURS: ${JAMS_INTERVAL_HOURS:-12}
+      # ---- Branding / ads ----
+      LINE_OA_ID: ${LINE_OA_ID:-@wasin}
+      KWAY_URL: ${KWAY_URL:-https://kway.app}
     expose:
       - "3000"
-    ports:
-      - "3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - thaigame_data:/app/storage
     restart: unless-stopped
@@ -29,4 +45,3 @@ services:
       start_period: 15s
 volumes:
   thaigame_data:
-

@@ -1,6 +1,6 @@
-# ThaiGame.org
+# ThaiGame.org โดย ดร.วศิน ภิรมย์
 
-เว็บรวมผลงานเกมไทยแบบ Self-hosted สำหรับ Deploy บน Coolify
+เว็บข่าวเกมไทย (AI-assisted) และคลังผลงานเกมไทยแบบ Self-hosted สำหรับ Deploy บน Coolify ใช้งานฟรี
 
 ## ความสามารถ
 
@@ -16,11 +16,23 @@
 - SQLite + Persistent Volume, CSRF, rate limit, security headers, sitemap และ health check
 - ข้อมูลตัวอย่าง 3 เกมที่ Admin แก้ไขหรือลบได้
 
+## ระบบข่าว AI (v2)
+
+- ดึงข้อมูลอัตโนมัติจาก RSS/Atom, itch.io ตามแท็ก, ช่อง/Playlist YouTube (ไม่ต้องใช้ key) และค้นหา YouTube ด้วยคำ (ต้องมี `YOUTUBE_API_KEY`)
+- กรองด้วยคำสำคัญรายแหล่ง และกันข่าวซ้ำด้วย URL
+- AI (Qwen2.5 7B ผ่าน Ollama/OpenAI-compatible API) เขียนข่าวภาษาไทยทีละ 1 งาน มีโควตาต่อวัน
+- ทุกข่าวเข้า "รออนุมัติ" ก่อน แอดมินแก้ไข เผยแพร่ ไม่อนุมัติ ปักหมุด หรือให้ AI เขียนใหม่ได้
+- เพิ่มลิงก์คอร์ส (Udemy, Zenva ฯลฯ) หรือคลิป YouTube เองได้ ระบบดึงชื่อ/รูป/คำอธิบายให้
+- หน้าใหม่: `/news`, `/videos`, `/learn`, `/contact`, `/news/rss.xml`
+- แอดมิน: `/admin/news` (อนุมัติ), `/admin/feed` (รายการดิบ), `/admin/sources` (แหล่งข่าว + ทดสอบ AI), `/admin/news/add`
+- **ปฏิทิน Game Jam** (`/jams`): ดึงจาก itch.io/jams ทุก 12 ชม. นับถอยหลังแบบเรียลไทม์ ปฏิทินรายเดือน แถบเด่นบนหน้าแรก ติดป้ายงานไทยอัตโนมัติ แอดมินปักหมุด/ซ่อน/เพิ่มงานในไทยเองได้ที่ `/admin/jams`
+- แบนเนอร์ KWAY.app (เปิดแท็บใหม่) และช่องทางติดต่อ LINE OA @wasin ทุกหน้า
+
 ## Deploy
 
 อ่าน [DEPLOY-COOLIFY.md](DEPLOY-COOLIFY.md)
 
-วิธีที่ง่ายที่สุด: อัปโหลดโฟลเดอร์นี้ขึ้น GitHub → Coolify `Public Repository` → เลือก `Docker Compose` → ใช้ `/compose.yaml`
+วิธีที่แนะนำ: Coolify `Private Repository (with GitHub App)` → เลือก `Docker Compose` → ใช้ `/compose.yaml` (ไม่ต้องใช้ token)
 
 สร้าง `SESSION_SECRET` ได้ด้วย:
 
