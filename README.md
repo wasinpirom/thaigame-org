@@ -2,6 +2,9 @@
 
 เว็บข่าวเกมไทย (AI-assisted) และคลังผลงานเกมไทยแบบ Self-hosted สำหรับ Deploy บน Coolify ใช้งานฟรี
 
+> โอเพนซอร์สเพื่อการศึกษา (MIT License) — Node.js + Express + EJS + SQLite, ระบบดึง RSS, AI เขียนข่าวด้วย LLM แบบ self-hosted, ปฏิทิน Game Jam และ Deploy ด้วย Dockerfile บน Coolify
+> ติดต่อ / แจ้งปัญหา: LINE OA @wasin
+
 ## ความสามารถ
 
 - สมัครสมาชิก เข้าสู่ระบบ และเปลี่ยนรหัสผ่าน
@@ -74,3 +77,8 @@ docker compose up -d --build
 - ตั้ง Backup ของ Volume และทดลอง Restore
 - ใช้รหัสผ่าน Admin ที่แข็งแรงและเก็บ `SESSION_SECRET` เป็น Secret ใน Coolify
 - หากเปิดรับคนทั่วไปจำนวนมาก ควรเพิ่ม Email verification, CAPTCHA และระบบลืมรหัสผ่านผ่าน SMTP
+
+
+## License
+
+โค้ดใช้สัญญาอนุญาต MIT นำไปศึกษา ดัดแปลง และใช้งานต่อได้ ยกเว้นชื่อ ThaiGame.org โลโก้ แบนเนอร์ KWAY.app และภาพของ ดร.วศิน ภิรมย์ ที่ไม่รวมอยู่ในสัญญาอนุญาตนี้
