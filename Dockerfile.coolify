@@ -1,4 +1,4 @@
-# Build from the repo folder (git clone / Coolify "Private/Public Repository" + Dockerfile build pack).
+# ThaiGame.org + AI เขียนข่าว (Qwen2.5 7B ในตัว) – วางใน Coolify (+ New → Dockerfile) แล้ว Deploy ได้เลย
 FROM ollama/ollama:latest AS ollama
 RUN rm -rf /usr/lib/ollama/cuda* /usr/lib/ollama/rocm* /usr/lib/ollama/vulkan* /usr/lib/ollama/mlx* || true
 
@@ -8,12 +8,11 @@ ENV NODE_ENV=production PORT=3000 STORAGE_DIR=/app/storage \
 COPY --from=ollama /usr/bin/ollama /usr/bin/ollama
 COPY --from=ollama /usr/lib/ollama /usr/lib/ollama
 WORKDIR /app
-COPY package.json package-lock.json ./
+ADD --keep-git-dir=false https://github.com/wasinpirom/thaigame-org.git#main /app
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates libgomp1 python3 make g++ \
  && npm ci --omit=dev && npm cache clean --force \
- && apt-get purge -y python3 make g++ && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
-COPY . .
-RUN mkdir -p /app/storage && chown -R node:node /app
+ && apt-get purge -y python3 make g++ && apt-get autoremove -y && rm -rf /var/lib/apt/lists/* \
+ && mkdir -p /app/storage && chown -R node:node /app
 USER node
 EXPOSE 3000
 VOLUME ["/app/storage"]

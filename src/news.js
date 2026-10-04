@@ -4,6 +4,7 @@ const { KINDS, SOURCE_TYPES } = require("./newsdb");
 const { fetchSource } = require("./feeds");
 const { writeArticle, testLlm, cfg, cacheImage } = require("./ai");
 const { pageInfo } = require("./fetcher");
+const ollama = require("./ollama");
 
 const PER_PAGE = 18;
 
@@ -169,6 +170,7 @@ function registerNews(app, { db, uploads, admin, csrf, flash, worker, siteUrl })
 
   // ---------- admin: AI ----------
   app.post("/admin/ai/test", admin, csrf, async (req, res) => {
+    if (!ollama.ready()) { flash(req, "info", `AI ยังไม่พร้อม: ${ollama.status.message} ${ollama.status.state === "pulling" ? ollama.status.progress + "%" : ""}`); return res.redirect(back(req, "/admin/sources")); }
     try { const r = await testLlm(); flash(req, "success", `เชื่อมต่อ ${cfg().model} ได้ (${r.seconds} วินาที): ${r.reply}`); }
     catch (e) { flash(req, "error", `เชื่อมต่อ AI ไม่ได้: ${e.message} — ตรวจ LLM_BASE_URL`); }
     res.redirect(back(req, "/admin/sources"));
@@ -177,7 +179,7 @@ function registerNews(app, { db, uploads, admin, csrf, flash, worker, siteUrl })
 
   function workerInfo() {
     const c = cfg(), day = new Date().toISOString().slice(0, 10);
-    return { model: c.model, baseUrl: c.baseUrl, enabled: c.enabled, autoPublish: c.autoPublish, dailyLimit: c.dailyLimit, usedToday: Number(db.prepare("SELECT value FROM settings WHERE key=?").get("ai_count_" + day)?.value || 0), busy: Boolean(worker?.busy), lastError: worker?.lastError || "", lastRun: worker?.lastRun || "", lastDurationSec: worker?.lastDurationSec || 0 };
+    return { model: c.model, baseUrl: c.baseUrl, enabled: c.enabled, autoPublish: c.autoPublish, dailyLimit: c.dailyLimit, usedToday: Number(db.prepare("SELECT value FROM settings WHERE key=?").get("ai_count_" + day)?.value || 0), busy: Boolean(worker?.busy), lastError: worker?.lastError || "", lastRun: worker?.lastRun || "", lastDurationSec: worker?.lastDurationSec || 0, embedded: ollama.status.enabled ? { state: ollama.status.state, message: ollama.status.message, progress: ollama.status.progress } : null };
   }
   app.locals.newsAdminStats = () => ({ pending: pendingCount(), published: countPublished(), queued: db.prepare("SELECT COUNT(*) n FROM feed_items WHERE status IN ('queued','processing')").get().n, fresh: db.prepare("SELECT COUNT(*) n FROM feed_items WHERE status='new'").get().n, sources: db.prepare("SELECT COUNT(*) n FROM news_sources WHERE active=1").get().n, ai: workerInfo() });
   return { cacheImage };

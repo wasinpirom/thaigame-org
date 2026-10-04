@@ -117,3 +117,4 @@ h1,h2,h3{letter-spacing:0}.container{width:min(calc(100% - 48px),var(--max))}
 .jam-card .text-cover__title{font-size:1.05rem}.review__img .text-cover{aspect-ratio:16/10;border-radius:10px}
 @media(max-width:700px){.text-cover--wide{aspect-ratio:16/9;padding:18px}}
 .text-cover{letter-spacing:normal;text-align:left}.jam-card .text-cover{padding-top:44px}.jam-card .text-cover__label{display:none}.jam-card .text-cover__title{font-size:1.2rem}
+.ai-status__embed{width:100%;margin:0;padding:8px 12px;background:#f2f6ff;border-radius:8px;font-size:.88rem}.ai-status__embed--ready{background:#e5f6ee;color:var(--green)}.ai-status__embed--error{background:#fdecea;color:var(--red)}.ai-status__embed--pulling{background:#fff3cd;color:#8a5a00}

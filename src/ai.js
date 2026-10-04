@@ -6,11 +6,12 @@ const sharp = require("sharp");
 const H = require("./helpers");
 const { pageInfo, safeFetch } = require("./fetcher");
 const { fetchSource } = require("./feeds");
+const ollama = require("./ollama");
 const { fetchItchJams, jamsDue } = require("./jams");
 const { KINDS, getSetting, setSetting } = require("./newsdb");
 
 const cfg = () => ({
-  baseUrl: String(process.env.LLM_BASE_URL || "http://host.docker.internal:11434/v1").replace(/\/+$/, ""),
+  baseUrl: String(process.env.LLM_BASE_URL || (process.env.EMBEDDED_OLLAMA === "true" ? `http://${(process.env.OLLAMA_HOST || "127.0.0.1:11434").replace(/^https?:\/\//, "")}/v1` : "http://host.docker.internal:11434/v1")).replace(/\/+$/, ""),
   model: process.env.LLM_MODEL || "qwen2.5:7b",
   apiKey: process.env.LLM_API_KEY || "",
   timeout: Number(process.env.LLM_TIMEOUT_MS || 900000),
@@ -137,10 +138,11 @@ async function writeArticle(db, uploads, itemId, { useAi = true, articleId = nul
 
 // One AI job at a time (CPU-friendly; shares the Ollama box with pasatalk).
 function startWorker(db, uploads, log = console) {
+  if (process.env.NODE_ENV !== "test" && cfg().enabled) ollama.start(log);
   const state = { busy: false, lastError: "", lastRun: "", lastDurationSec: 0, timers: [] };
   const c = cfg();
   async function aiTick() {
-    if (state.busy || !cfg().enabled) return;
+    if (state.busy || !cfg().enabled || !ollama.ready()) return;
     const day = new Date().toISOString().slice(0, 10);
     if (Number(getSetting(db, "ai_count_" + day, "0")) >= cfg().dailyLimit) return;
     const next = db.prepare("SELECT id FROM feed_items WHERE status='queued' ORDER BY id ASC LIMIT 1").get();

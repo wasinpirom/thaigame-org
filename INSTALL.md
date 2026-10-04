@@ -1,21 +1,14 @@
-# ติดตั้ง ThaiGame.org บน Coolify แบบ Dockerfile (สั้นที่สุด)
+# ติดตั้ง ThaiGame.org บน Coolify (Dockerfile เดียว มี AI ในตัว)
 
-1. อัปโหลดไฟล์ทั้งหมดขึ้น GitHub repo `thaigame-org` (ให้ `Dockerfile` อยู่หน้าแรกของ repo)
-2. Coolify → **+ New** → **Private Repository (with GitHub App)** → เลือก `thaigame-org` / `main`
-3. **Build Pack: `Dockerfile`**
-4. **Ports Exposes: `3000`**
-5. **Domains:** `https://thaigame.org`
-6. **Persistent Storage** → + Add → Volume → Destination Path: `/app/storage`
-7. **Environment Variables** (ใส่แค่ 2 ตัวก็ใช้งานได้):
-   ```
-   ADMIN_EMAIL=อีเมลแอดมิน
-   ADMIN_PASSWORD=รหัสผ่านแข็งแรง
-   ```
-   ถ้าจะเปิดระบบข่าว AI ให้ใส่เพิ่มอีก 1 ตัว:
-   ```
-   LLM_BASE_URL=http://host.docker.internal:11434/v1
-   ```
-   แล้วใส่ช่อง **Custom Docker Options**: `--add-host=host.docker.internal:host-gateway`
-8. กด **Deploy** → เปิด `https://thaigame.org/login`
+1. Coolify → **+ New** → **Dockerfile** → วางเนื้อหาไฟล์ `Dockerfile.coolify`
+2. **Ports Exposes:** `3000`
+3. **Domains:** `https://thaigame.org`
+4. **Persistent Storage** → Volume → Destination Path: `/app/storage` (เก็บฐานข้อมูล รูป และโมเดล AI)
+5. **Environment Variables:** `ADMIN_EMAIL` และ `ADMIN_PASSWORD` (ไม่ต้องติ๊ก Build Variable)
+6. **Deploy** → เข้า `https://thaigame.org/login`
 
-ค่าอื่นทั้งหมดมีค่าเริ่มต้นให้แล้ว (SESSION_SECRET สร้างเองอัตโนมัติและเก็บไว้ใน `/app/storage`) ดูตัวแปรเพิ่มเติมได้ใน `.env.example`
+AI (Ollama + Qwen2.5 7B) อยู่ในตัว ครั้งแรกระบบจะดาวน์โหลดโมเดลประมาณ 4.7 GB ลง volume (ครั้งเดียว) ดูความคืบหน้าได้ที่ `/admin`
+
+- ต้องมี RAM ว่างประมาณ 6 GB ตอน AI เขียนข่าว (โมเดลจะถูกปล่อยจาก RAM หลังว่าง 5 นาที)
+- ถ้าเครื่อง RAM น้อยหรือช้า ใส่ env `LLM_MODEL=qwen2.5:3b` (ประมาณ 2 GB เร็วกว่าราว 2 เท่า)
+- ถ้าอยากใช้ Ollama ตัวอื่นแทน ใส่ env `LLM_BASE_URL=http://<host>:11434/v1` ระบบจะไม่เปิด Ollama ในตัว
